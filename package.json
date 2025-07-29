@@ -1,0 +1,25 @@
+{
+  "name": "auth0-guard",
+  "version": "1.0.3",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/passport": "^11.0.3",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.0.1",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
