@@ -1,4 +1,4 @@
-# nest-auth0-guard
+# auth0-guard
 
 A reusable NestJS Auth0 guard for validating JWT tokens locally or trusting API Gateway headers in production. This guard automatically switches behavior based on the `NODE_ENV` environment variable.
 
@@ -19,7 +19,7 @@ A reusable NestJS Auth0 guard for validating JWT tokens locally or trusting API 
 ### 1. Install the package
 
 ```bash
-npm install nest-auth0-guard
+npm install auth0-guard
 ```
 
 ### 2. Install required peer dependencies
