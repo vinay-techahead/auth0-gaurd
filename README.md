@@ -116,16 +116,6 @@ The guard automatically fetches additional user data from Redis using the `user.
 }
 ```
 
----
-
-## ✨ Optional Enhancements
-
-- ✅ Custom `@User()` decorator
-- ✅ Role-based guards (e.g. `@Roles('admin')`)
-- ✅ Swagger bearer auth integration
-- ✅ Global guard registration
-
-Let us know if you'd like these added!
 
 ---
 
