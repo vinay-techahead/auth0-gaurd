@@ -37,10 +37,11 @@ npm install @nestjs/common @nestjs/core @nestjs/passport passport passport-jwt i
 | `NODE_ENV`       | `local` or `production` | ✅       | Used to switch between local and prod |
 | `AUTH0_DOMAIN`   | `your-tenant.auth0.com` | ✅       | Your Auth0 tenant domain              |
 | `AUTH0_AUDIENCE` | `https://your-api`      | ✅       | API audience in Auth0                 |
-| `REDIS_HOST`     | `localhost`             | ❌       | Redis host (defaults to localhost)    |
-| `REDIS_PORT`     | `6379`                  | ❌       | Redis port (defaults to 6379)         |
+| `REDIS_HOST`     | `localhost`             | ✅       | Redis host (defaults to localhost)    |
+| `REDIS_PORT`     | `6379`                  | ✅       | Redis port (defaults to 6379)         |
 | `REDIS_PASSWORD` | `your-password`         | ❌       | Redis password (optional)             |
-| `REDIS_DB`       | `0`                     | ❌       | Redis database index (defaults to 0)  |
+| `REDIS_DB`       | `0`                     | ✅       | Redis database index (defaults to 0)  |
+| `REDIS_USERNAME` | `your-username`         | ❌       | Redis username (optional)             |
 
 Add these in your `.env` file:
 
@@ -52,6 +53,7 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=your-password  # Optional
 REDIS_DB=0  # Optional: database index
+REDIS_USERNAME=your-username # Optional
 ```
 
 > 🔁 In production, you can set `NODE_ENV=production` and pass user info via `x-user` header.
@@ -115,10 +117,3 @@ The guard automatically fetches additional user data from Redis using the `user.
   }
 }
 ```
-
-
----
-
-## 📄 License
-
-MIT
