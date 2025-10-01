@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
   private redisService: RedisService;
 
   constructor(private reflector: Reflector) {
-    const environment = getEnv("NODE_ENV");
+    const environment = getEnv("AUTH_ENV");
     const isLocal = environment === "local";
     this.strategy = isLocal ? new JwtStrategy() : new HeaderStrategy();
     this.redisService = new RedisService();
