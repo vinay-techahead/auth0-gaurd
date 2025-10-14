@@ -25,7 +25,7 @@ export class WebSocketGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     try {
-      const user = await this.strategy.validateRequest(request);
+      const user = await this.strategy.validateRequest(request, false);
       if (!user) throw new UnauthorizedException("Invalid or missing auth");
 
       // Get user data from Redis using user.sub

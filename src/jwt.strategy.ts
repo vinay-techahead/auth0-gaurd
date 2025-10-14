@@ -4,11 +4,12 @@ import { getEnv } from "./env";
 import { UnauthorizedException } from "@nestjs/common";
 
 export class JwtStrategy {
-  async validateRequest(req: any): Promise<any> {
+  async validateRequest(req: any, isOptional: boolean): Promise<any> {
     const auth = req.headers.authorization || "";
     const token = auth.replace("Bearer ", "");
 
     if (!token) {
+      if (isOptional) return null;
       throw new UnauthorizedException("Missing bearer token");
     }
 

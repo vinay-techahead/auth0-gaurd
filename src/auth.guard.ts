@@ -9,6 +9,7 @@ import { JwtStrategy } from "./jwt.strategy";
 import { HeaderStrategy } from "./header.strategy";
 import { getEnv } from "./env";
 import { RedisService } from "./redis.service";
+import { OPTIONAL_JWT } from "./decorator/optional-jwt.decorator";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,15 +19,26 @@ export class AuthGuard implements CanActivate {
   constructor(private reflector: Reflector) {
     const environment = getEnv("AUTH_ENV");
     const isLocal = environment === "local";
-    this.strategy = isLocal ? new JwtStrategy() : new HeaderStrategy();
+    this.strategy = new JwtStrategy();
     this.redisService = new RedisService();
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    let isOptional = false;
+    if (this.reflector) {
+      isOptional = this.reflector.getAllAndOverride<boolean>(OPTIONAL_JWT, [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+    }
+    console.log("isOptional:", isOptional);
     const request = context.switchToHttp().getRequest();
     try {
-      const user = await this.strategy.validateRequest(request);
-      if (!user) throw new UnauthorizedException("Invalid or missing auth");
+      const user = await this.strategy.validateRequest(request, isOptional);
+      if (!user) {
+        if (isOptional) return true;
+        throw new UnauthorizedException("Invalid or missing auth");
+      }
 
       // Get user data from Redis using user.sub
       const userData = await this.redisService.getUserData(user.uid);
