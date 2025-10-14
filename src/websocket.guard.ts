@@ -11,12 +11,12 @@ import { getEnv } from "./env";
 import { RedisService } from "./redis.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class WebSocketGuard implements CanActivate {
   private strategy: JwtStrategy | HeaderStrategy;
   private redisService: RedisService;
 
-  constructor(private reflector: Reflector) {
-    const environment = getEnv("AUTH_ENV");
+  constructor() {
+    const environment = getEnv("NODE_ENV");
     const isLocal = environment === "local";
     this.strategy = isLocal ? new JwtStrategy() : new HeaderStrategy();
     this.redisService = new RedisService();
@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
       if (!user) throw new UnauthorizedException("Invalid or missing auth");
 
       // Get user data from Redis using user.sub
-      const userData = await this.redisService.getUserData(user.uid);
+      const userData = await this.redisService.getUserData(user.sub);
       if (userData) {
         if (userData.isActive === false) {
           throw new UnauthorizedException("User is not active");

@@ -36,7 +36,7 @@ export class RedisService implements OnModuleDestroy {
   async getUserData(userSub: string): Promise<any | null> {
     try {
       const userData = await this.client.get(
-        `${getEnv("NODE_ENV")}_${userSub}`
+        `${getEnv("NODE_ENV")}:user:${userSub}`
       );
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
@@ -48,7 +48,7 @@ export class RedisService implements OnModuleDestroy {
   async setUserData(userSub: string, userData: any): Promise<void> {
     try {
       await this.client.set(
-        `${getEnv("NODE_ENV")}_${userSub}`,
+        `${getEnv("NODE_ENV")}:user:${userSub}`,
         JSON.stringify(userData)
       );
     } catch (error) {
