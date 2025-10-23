@@ -33,10 +33,8 @@ npm install @nestjs/common @nestjs/core @nestjs/passport passport passport-jwt i
 ## 🔐 Required Environment Variables
 
 | Key              | Example Value           | Required | Description                           |
-| ---------------- | ----------------------- | -------- | ------------------------------------- |
-| `NODE_ENV`       | `local` or `production` | ✅       | Used to switch between local and prod |
-| `AUTH0_DOMAIN`   | `your-tenant.auth0.com` | ✅       | Your Auth0 tenant domain              |
-| `AUTH0_AUDIENCE` | `https://your-api`      | ✅       | API audience in Auth0                 |
+| ---------------- | ----------------------- | -------- | ------------------------------------- | --- |
+| `NODE_ENV`       | `local` or `production` | ✅       | Used to switch between local and prod |     |
 | `REDIS_HOST`     | `localhost`             | ✅       | Redis host (defaults to localhost)    |
 | `REDIS_PORT`     | `6379`                  | ✅       | Redis port (defaults to 6379)         |
 | `REDIS_PASSWORD` | `your-password`         | ❌       | Redis password (optional)             |
@@ -47,13 +45,12 @@ Add these in your `.env` file:
 
 ```env
 NODE_ENV=local
-AUTH0_DOMAIN=your-tenant.auth0.com
-AUTH0_AUDIENCE=https://your-api
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=your-password  # Optional
 REDIS_DB=0  # Optional: database index
 REDIS_USERNAME=your-username # Optional
+
 ```
 
 > 🔁 In production, you can set `NODE_ENV=production` and pass user info via `x-user` header.
