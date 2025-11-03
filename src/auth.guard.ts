@@ -8,6 +8,7 @@ import { Reflector } from "@nestjs/core";
 import { RedisService } from "./redis.service";
 import { OPTIONAL_JWT } from "./decorator/optional-jwt.decorator";
 import { FirebaseService } from "./firebase.service";
+import { FIREBASE_JWT } from "./decorator/firebase-verify.decorator";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -21,11 +22,16 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let isOptional = false;
+    let firebaseValidate = false;
     if (this.reflector) {
       isOptional = this.reflector.getAllAndOverride<boolean>(OPTIONAL_JWT, [
         context.getHandler(),
         context.getClass(),
       ]);
+      firebaseValidate = this.reflector.getAllAndOverride<boolean>(
+        FIREBASE_JWT,
+        [context.getHandler(), context.getClass()]
+      );
     }
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers["authorization"];
@@ -35,6 +41,10 @@ export class AuthGuard implements CanActivate {
 
     const token = authHeader.split("Bearer ")[1];
     const user = await this.firebaseService.getAuth().verifyIdToken(token);
+    if (firebaseValidate) {
+      request.user = user;
+      return true;
+    }
     if (!user) {
       if (isOptional) return true;
       throw new UnauthorizedException("Invalid or missing auth");
