@@ -5,21 +5,17 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtStrategy } from "./jwt.strategy";
-import { HeaderStrategy } from "./header.strategy";
-import { getEnv } from "./env";
 import { RedisService } from "./redis.service";
 import { OPTIONAL_JWT } from "./decorator/optional-jwt.decorator";
+import { FirebaseService } from "./firebase.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private strategy: JwtStrategy | HeaderStrategy;
+  private readonly firebaseService: FirebaseService;
   private redisService: RedisService;
 
   constructor(private reflector: Reflector) {
-    const environment = getEnv("AUTH_ENV");
-    const isLocal = environment === "local";
-    this.strategy = new JwtStrategy();
+    this.firebaseService = new FirebaseService();
     this.redisService = new RedisService();
   }
 
@@ -31,42 +27,44 @@ export class AuthGuard implements CanActivate {
         context.getClass(),
       ]);
     }
-    console.log("isOptional:", isOptional);
     const request = context.switchToHttp().getRequest();
-    try {
-      const user = await this.strategy.validateRequest(request, isOptional);
-      if (!user) {
-        if (isOptional) return true;
-        throw new UnauthorizedException("Invalid or missing auth");
-      }
+    const authHeader = request.headers["authorization"];
 
-      // Get user data from Redis using user.sub
-      const userData = await this.redisService.getUserData(user.uid);
-      if (userData) {
-        if (userData.isActive === false) {
-          throw new UnauthorizedException("User is not active");
-        }
-        // Merge Redis user data with the authenticated user
-        request.user = {
-          ...user,
-          userId: userData.userId,
-          userType: userData.userType,
-          ...(userData.userType === "RETAILER" && {
-            retailerId: userData.retailerId,
-          }),
-        };
-      } else {
-        // If no Redis data found, throw an error
-        throw new UnauthorizedException("No active login session found");
-      }
+    if (!authHeader?.startsWith("Bearer "))
+      throw new UnauthorizedException("Missing or invalid token");
 
-      return true;
-    } catch (error: unknown) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-
-      throw new UnauthorizedException("Invalid or expired token");
+    const token = authHeader.split("Bearer ")[1];
+    const user = await this.firebaseService.getAuth().verifyIdToken(token);
+    if (!user) {
+      if (isOptional) return true;
+      throw new UnauthorizedException("Invalid or missing auth");
     }
+
+    // Get user data from Redis using user.sub
+    const userData = await this.redisService.getUserData(user.uid);
+    if (userData) {
+      if (userData.isActive === false) {
+        if (isOptional) return true;
+        throw new UnauthorizedException("User is not active");
+      }
+      // Merge Redis user data with the authenticated user
+      request.user = {
+        ...user,
+        userId: userData.userId,
+        userType: userData.userType,
+        ...(userData.userType === "RETAILER" && {
+          retailerId: userData.retailerId,
+        }),
+        ...((userData.userType === "ADMIN" ||
+          userData.userType === "RETAILER") && {
+          permission: userData.permission,
+        }),
+      };
+    } else {
+      // If no Redis data found, throw an error
+      throw new UnauthorizedException("No active login session found");
+    }
+
+    return true;
   }
 }
