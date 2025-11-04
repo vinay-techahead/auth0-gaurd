@@ -7,3 +7,4 @@ export * from "./webhook.guard";
 export * from "./decorator/role.decorator";
 export * from "./roles.guard";
 export * from "./decorator/optional-jwt.decorator";
+export * from "./decorator/firebase-verify.decorator";
