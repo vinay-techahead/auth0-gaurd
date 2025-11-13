@@ -40,7 +40,12 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException("Missing or invalid token");
 
     const token = authHeader.split("Bearer ")[1];
-    const user = await this.firebaseService.getAuth().verifyIdToken(token);
+    const user = await this.firebaseService
+      .getAuth()
+      .verifyIdToken(token)
+      .catch((error) => {
+        throw new UnauthorizedException("Invalid or expired token");
+      });
     if (firebaseValidate) {
       request.user = user;
       return true;
