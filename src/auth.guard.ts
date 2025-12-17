@@ -74,7 +74,8 @@ export class AuthGuard implements CanActivate {
         }),
         ...((userData.userType === "ADMIN" ||
           userData.userType === "RETAILER") && {
-          permission: userData.permission,
+          permissions: userData.permissions,
+          allowedStores: userData.storeIds,
         }),
       };
     } else {
