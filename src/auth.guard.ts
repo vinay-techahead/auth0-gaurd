@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
       ]);
       firebaseValidate = this.reflector.getAllAndOverride<boolean>(
         FIREBASE_JWT,
-        [context.getHandler(), context.getClass()]
+        [context.getHandler(), context.getClass()],
       );
     }
     const request = context.switchToHttp().getRequest();
@@ -67,8 +67,7 @@ export class AuthGuard implements CanActivate {
       // Merge Redis user data with the authenticated user
       request.user = {
         ...user,
-        userId: userData.userId,
-        userType: userData.userType,
+        ...userData,
         ...(userData.userType === "RETAILER" && {
           retailerId: userData.retailerId,
         }),
