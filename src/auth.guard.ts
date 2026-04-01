@@ -77,6 +77,7 @@ export class AuthGuard implements CanActivate {
           allowedStores: userData.storeIds,
         }),
       };
+      console.log(request.user);
     } else {
       // If no Redis data found, throw an error
       throw new UnauthorizedException("No active login session found");
