@@ -14,6 +14,7 @@ import { FIREBASE_JWT } from "./decorator/firebase-verify.decorator";
 export class AuthGuard implements CanActivate {
   private readonly firebaseService: FirebaseService;
   private redisService: RedisService;
+  private userTypes = ["ADMIN", "RETAILER", "PERSONAL_SHOPPER"];
 
   constructor(private reflector: Reflector) {
     this.firebaseService = new FirebaseService();
@@ -71,8 +72,7 @@ export class AuthGuard implements CanActivate {
         ...(userData.userType === "RETAILER" && {
           retailerId: userData.retailerId,
         }),
-        ...((userData.userType === "ADMIN" ||
-          userData.userType === "RETAILER") && {
+        ...(this.userTypes.includes(userData.userType) && {
           permissions: userData.permissions,
           allowedStores: userData.storeIds,
         }),
